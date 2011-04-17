@@ -1,0 +1,27 @@
+# General generated stuff
+*.o
+*.so
+*.la
+*.lo
+*.a
+
+# Autotools stuff
+/config.*
+/configure
+Makefile
+Makefile.in
+Makefile.in.in
+.deps/
+.libs/
+/aclocal.m4
+/install-sh
+/missing
+/mkinstalldirs
+/libtool
+/ltmain.sh
+stamp-*
+/autom4te.cache/
+/depcomp
+/intltool-*.in
+/build/m4
+/build/aux
