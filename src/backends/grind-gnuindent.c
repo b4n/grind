@@ -164,8 +164,6 @@ create_watch_fd (int           fd,
   
   channel = create_io_channel (fd);
   
-  /*if (g_io_channel_set_flags (channel, G_IO_FLAG_NONBLOCK, NULL) != G_IO_STATUS_NORMAL)
-    g_debug ("failed to set non-blocking");*/
   source = g_io_create_watch (channel, cond);
   g_source_set_callback (source, (GSourceFunc)func, data, NULL);
   
@@ -242,9 +240,9 @@ handle_output_ready (GIOChannel  *channel,
       gchar  *line;
       gsize   len;
       
-      g_debug ("reading...");
+      /*g_debug ("reading...");*/
       status = g_io_channel_read_line (channel, &line, &len, NULL, &data->error);
-      g_debug ("read %lu bytes: %s", len, line);
+      /*g_debug ("read %lu bytes: %s", len, line);*/
       if (line != NULL) {
         g_string_append_len (str, line, (gssize)len);
         g_free (line);
