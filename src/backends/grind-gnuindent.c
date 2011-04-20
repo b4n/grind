@@ -251,6 +251,7 @@ handle_output_ready (GIOChannel  *channel,
       }
     } while (status == G_IO_STATUS_NORMAL || status == G_IO_STATUS_AGAIN);
   }
+  g_io_channel_shutdown(channel, FALSE, data->error ? NULL : &data->error);
   
   return FALSE;
 }
@@ -282,7 +283,12 @@ write_input (int          fd,
   do {
     status = g_io_channel_write_chars (channel, data, -1, NULL, error);
   } while (status == G_IO_STATUS_AGAIN);
-  g_io_channel_shutdown (channel, TRUE, NULL);
+  /* don't care about shutdown errors if we already have an error */
+  if (status != G_IO_CHANNEL_ERROR) {
+    status = g_io_channel_shutdown(channel, TRUE, error);
+  } else {
+    g_io_channel_shutdown(channel, TRUE, NULL);
+  }
   
   return status != G_IO_STATUS_ERROR;
 }
