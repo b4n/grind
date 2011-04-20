@@ -330,7 +330,7 @@ build_args (GrindBackendGNUIndent  *self,
   
   g_ptr_array_add (array, NULL);
   
-  return g_ptr_array_free (array, FALSE);
+  return (gchar **)g_ptr_array_free (array, FALSE);
 }
 
 static gchar *
