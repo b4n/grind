@@ -43,13 +43,13 @@ typedef struct _GrindBackendAStylePrivate GrindBackendAStylePrivate;
 
 struct _GrindBackendAStyle
 {
-  GObject parent_instance;
+  GrindIndenter parent_instance;
   GrindBackendAStylePrivate *priv;
 };
 
 struct _GrindBackendAStyleClass
 {
-  GObjectClass parent_class;
+  GrindIndenterClass parent_class;
 };
 
 

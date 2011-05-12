@@ -28,55 +28,108 @@
 #include "document.h"
 
 
-G_DEFINE_INTERFACE (GrindIndenter, grind_indenter, G_TYPE_OBJECT)
+enum
+{
+  PROP_0,
+  
+  PROP_AUTHOR,
+  PROP_VERSION,
+  PROP_NAME,
+  PROP_DESCRIPTION
+};
+
+
+static void     grind_indenter_get_property   (GObject     *object,
+                                               guint        prop_id,
+                                               GValue      *value,
+                                               GParamSpec  *pspec);
+
+
+G_DEFINE_ABSTRACT_TYPE (GrindIndenter, grind_indenter, G_TYPE_OBJECT)
 
 
 static void
-grind_indenter_default_init (GrindIndenterInterface *iface)
+grind_indenter_class_init (GrindIndenterClass *klass)
 {
-  static gboolean initialized = FALSE;
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
-  if (G_UNLIKELY (! initialized)) {
-    initialized = TRUE;
+  object_class->get_property = grind_indenter_get_property;
+  
+  g_object_class_install_property (object_class, PROP_AUTHOR,
+                                   g_param_spec_string ("author",
+                                                        "Author",
+                                                        "Backend author",
+                                                        NULL,
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB |
+                                                        G_PARAM_READABLE));
+  g_object_class_install_property (object_class, PROP_DESCRIPTION,
+                                   g_param_spec_string ("description",
+                                                        "Description",
+                                                        "Backend description",
+                                                        NULL,
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB |
+                                                        G_PARAM_READABLE));
+  g_object_class_install_property (object_class, PROP_NAME,
+                                   g_param_spec_string ("name",
+                                                        "Name",
+                                                        "Backend name",
+                                                        NULL,
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB |
+                                                        G_PARAM_READABLE));
+  g_object_class_install_property (object_class, PROP_VERSION,
+                                   g_param_spec_string ("version",
+                                                        "Version",
+                                                        "Backend version",
+                                                        NULL,
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB |
+                                                        G_PARAM_READABLE));
+}
+
+static void
+grind_indenter_init (GrindIndenter *self)
+{
+  
+}
+
+static void
+grind_indenter_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+  GrindIndenter *self = GRIND_INDENTER (object);
+  
+  switch (prop_id) {
+    case PROP_AUTHOR:
+      g_value_set_string (value, grind_indenter_get_author (self));
+      break;
     
-    g_object_interface_install_property (iface,
-                                         g_param_spec_string ("author",
-                                                              "Author",
-                                                              "Backend author",
-                                                              NULL,
-                                                              G_PARAM_STATIC_NAME |
-                                                              G_PARAM_STATIC_NICK |
-                                                              G_PARAM_STATIC_BLURB |
-                                                              G_PARAM_READABLE));
-    g_object_interface_install_property (iface,
-                                         g_param_spec_string ("version",
-                                                              "Version",
-                                                              "Backend version",
-                                                              NULL,
-                                                              G_PARAM_STATIC_NAME |
-                                                              G_PARAM_STATIC_NICK |
-                                                              G_PARAM_STATIC_BLURB |
-                                                              G_PARAM_READABLE));
-    g_object_interface_install_property (iface,
-                                         g_param_spec_string ("name",
-                                                              "Name",
-                                                              "Backend name",
-                                                              NULL,
-                                                              G_PARAM_STATIC_NAME |
-                                                              G_PARAM_STATIC_NICK |
-                                                              G_PARAM_STATIC_BLURB |
-                                                              G_PARAM_READABLE));
-    g_object_interface_install_property (iface,
-                                         g_param_spec_string ("description",
-                                                              "Description",
-                                                              "Backend description",
-                                                              NULL,
-                                                              G_PARAM_STATIC_NAME |
-                                                              G_PARAM_STATIC_NICK |
-                                                              G_PARAM_STATIC_BLURB |
-                                                              G_PARAM_READABLE));
+    case PROP_DESCRIPTION:
+      g_value_set_string (value, grind_indenter_get_description (self));
+      break;
+    
+    case PROP_NAME:
+      g_value_set_string (value, grind_indenter_get_name (self));
+      break;
+    
+    case PROP_VERSION:
+      g_value_set_string (value, grind_indenter_get_version (self));
+      break;
+    
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
   }
 }
+
 
 gboolean
 grind_indenter_indent (GrindIndenter *self,
@@ -84,45 +137,29 @@ grind_indenter_indent (GrindIndenter *self,
                        gint           start,
                        gint           end)
 {
-  return GRIND_INDENTER_GET_INTERFACE (self)->indent (self, doc, start, end);
+  return GRIND_INDENTER_GET_CLASS (self)->indent (self, doc, start, end);
 }
 
-gchar *
+const gchar *
 grind_indenter_get_author (GrindIndenter *self)
 {
-  gchar *author;
-  
-  g_object_get (self, "author", &author, NULL);
-  
-  return author;
+  return GRIND_INDENTER_GET_CLASS (self)->get_author (self);
 }
 
-gchar *
-grind_indenter_get_version (GrindIndenter *self)
-{
-  gchar *version;
-  
-  g_object_get (self, "version", &version, NULL);
-  
-  return version;
-}
-
-gchar *
-grind_indenter_get_name (GrindIndenter *self)
-{
-  gchar *name;
-  
-  g_object_get (self, "name", &name, NULL);
-  
-  return name;
-}
-
-gchar *
+const gchar *
 grind_indenter_get_description (GrindIndenter *self)
 {
-  gchar *description;
-  
-  g_object_get (self, "description", &description, NULL);
-  
-  return description;
+  return GRIND_INDENTER_GET_CLASS (self)->get_description (self);
+}
+
+const gchar *
+grind_indenter_get_name (GrindIndenter *self)
+{
+  return GRIND_INDENTER_GET_CLASS (self)->get_name (self);
+}
+
+const gchar *
+grind_indenter_get_version (GrindIndenter *self)
+{
+  return GRIND_INDENTER_GET_CLASS (self)->get_version (self);
 }

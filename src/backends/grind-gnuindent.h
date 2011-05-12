@@ -43,13 +43,13 @@ typedef struct _GrindBackendGNUIndentPrivate GrindBackendGNUIndentPrivate;
 
 struct _GrindBackendGNUIndent
 {
-  GObject parent_instance;
+  GrindIndenter parent_instance;
   GrindBackendGNUIndentPrivate *priv;
 };
 
 struct _GrindBackendGNUIndentClass
 {
-  GObjectClass parent_class;
+  GrindIndenterClass parent_class;
 };
 
 

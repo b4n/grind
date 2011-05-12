@@ -31,38 +31,45 @@
 G_BEGIN_DECLS
 
 
-#define GRIND_TYPE_INDENTER               (grind_indenter_get_type ())
-#define GRIND_INDENTER(obj)               (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRIND_TYPE_INDENTER, GrindIndenter))
-#define GRIND_IS_INDENTER(obj)            (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRIND_TYPE_INDENTER))
-#define GRIND_INDENTER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), GRIND_TYPE_INDENTER, GrindIndenterInterface))
+#define GRIND_TYPE_INDENTER             (grind_indenter_get_type ())
+#define GRIND_INDENTER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRIND_TYPE_INDENTER, GrindIndenter))
+#define GRIND_INDENTER_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GRIND_TYPE_INDENTER, GrindIndenterClass))
+#define GRIND_IS_INDENTER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRIND_TYPE_INDENTER))
+#define GRIND_IS_INDENTER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GRIND_TYPE_INDENTER))
+#define GRIND_INDENTER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GRIND_TYPE_INDENTER, GrindIndenterClass))
 
-typedef struct _GrindIndenter           GrindIndenter;
-typedef struct _GrindIndenterInterface  GrindIndenterInterface;
+typedef struct _GrindIndenter       GrindIndenter;
+typedef struct _GrindIndenterClass  GrindIndenterClass;
 
-struct _GrindIndenterInterface
+struct _GrindIndenter
 {
-  GTypeInterface parent_iface;
+  GObject parent;
+};
+
+struct _GrindIndenterClass
+{
+  GObjectClass parent_class;
   
+  const gchar  *(*get_author)       (GrindIndenter *self);
+  const gchar  *(*get_description)  (GrindIndenter *self);
+  const gchar  *(*get_name)         (GrindIndenter *self);
+  const gchar  *(*get_version)      (GrindIndenter *self);
   gboolean      (*indent)           (GrindIndenter *self,
                                      GeanyDocument *doc,
                                      gint           start,
                                      gint           end);
-  /*const gchar  *(*get_author)       (GrindIndenter *self);
-  const gchar  *(*get_version)      (GrindIndenter *self);
-  const gchar  *(*get_name)         (GrindIndenter *self);
-  const gchar  *(*get_description)  (GrindIndenter *self);*/
 };
 
 
-GType           grind_indenter_get_type         (void) G_GNUC_CONST;
-gboolean        grind_indenter_indent           (GrindIndenter *self,
-                                                 GeanyDocument *doc,
-                                                 gint           start,
-                                                 gint           end);
-gchar          *grind_indenter_get_author       (GrindIndenter *self);
-gchar          *grind_indenter_get_version      (GrindIndenter *self);
-gchar          *grind_indenter_get_name         (GrindIndenter *self);
-gchar          *grind_indenter_get_description  (GrindIndenter *self);
+GType         grind_indenter_get_type               (void) G_GNUC_CONST;
+gboolean      grind_indenter_indent                 (GrindIndenter *self,
+                                                     GeanyDocument *doc,
+                                                     gint           start,
+                                                     gint           end);
+const gchar  *grind_indenter_get_author             (GrindIndenter *self);
+const gchar  *grind_indenter_get_description        (GrindIndenter *self);
+const gchar  *grind_indenter_get_name               (GrindIndenter *self);
+const gchar  *grind_indenter_get_version            (GrindIndenter *self);
 
 
 G_END_DECLS

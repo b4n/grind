@@ -43,13 +43,13 @@ typedef struct _GrindBackendNaivePrivate  GrindBackendNaivePrivate;
 
 struct _GrindBackendNaive
 {
-  GObject parent_instance;
+  GrindIndenter parent_instance;
   GrindBackendNaivePrivate *priv;
 };
 
 struct _GrindBackendNaiveClass
 {
-  GObjectClass parent_class;
+  GrindIndenterClass parent_class;
 };
 
 

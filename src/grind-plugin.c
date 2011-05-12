@@ -65,10 +65,9 @@ reindent (GeanyDocument  *doc,
     }
     
     if (start != end) {
-      gchar *name = grind_indenter_get_name (indenter);
-      gchar *author = grind_indenter_get_author (indenter);
-      
-      g_debug ("Using indenter \"%s\" by \"%s\"", name, author);
+      g_debug ("Using indenter \"%s\" by \"%s\"",
+               grind_indenter_get_name (indenter),
+               grind_indenter_get_author (indenter));
       
       sci_start_undo_action (sci);
       if (grind_indenter_indent (indenter, doc,

@@ -34,89 +34,29 @@
 #include "grind-indenter.h"
 
 
-static GrindIndenterInterface  *grind_backend_gnuindent_indenter_parent_iface = NULL;
-
-enum
-{
-  PROP_0,
-  PROP_AUTHOR,
-  PROP_VERSION,
-  PROP_NAME,
-  PROP_DESCRIPTION
-};
+static const gchar *grind_backend_gnuindent_real_get_author       (GrindIndenter *base);
+static const gchar *grind_backend_gnuindent_real_get_description  (GrindIndenter *base);
+static const gchar *grind_backend_gnuindent_real_get_name         (GrindIndenter *base);
+static const gchar *grind_backend_gnuindent_real_get_version      (GrindIndenter *base);
+static gboolean     grind_backend_gnuindent_real_indent           (GrindIndenter *base,
+                                                                   GeanyDocument *doc,
+                                                                   gint           start,
+                                                                   gint           end);
 
 
-static void     grind_backend_gnuindent_indenter_iface_init   (GrindIndenterInterface *iface);
-static gboolean grind_backend_gnuindent_real_indent           (GrindIndenter *base,
-                                                               GeanyDocument *doc,
-                                                               gint           start,
-                                                               gint           end);
+G_DEFINE_TYPE (GrindBackendGNUIndent, grind_backend_gnuindent, GRIND_TYPE_INDENTER)
 
-
-G_DEFINE_TYPE_WITH_CODE (GrindBackendGNUIndent, grind_backend_gnuindent,
-                         G_TYPE_OBJECT,
-                         {
-                           G_IMPLEMENT_INTERFACE (GRIND_TYPE_INDENTER,
-                                                  grind_backend_gnuindent_indenter_iface_init);
-                         })
-
-
-static void
-grind_backend_gnuindent_get_property (GObject    *object,
-                                      guint       property_id,
-                                      GValue     *value,
-                                      GParamSpec *pspec)
-{
-  switch (property_id) {
-    case PROP_AUTHOR:
-      g_value_set_string (value, "The GRInd authors");
-      break;
-    
-    case PROP_VERSION:
-      g_value_set_string (value, "0.1");
-      break;
-    
-    case PROP_NAME:
-      g_value_set_string (value, "GNU Indent");
-      break;
-    
-    case PROP_DESCRIPTION:
-      g_value_set_string (value, "Indenter using GNUIndent");
-      break;
-    
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-      break;
-  }
-}
 
 static void
 grind_backend_gnuindent_class_init (GrindBackendGNUIndentClass *klass)
 {
-  grind_backend_gnuindent_parent_class = g_type_class_peek_parent (klass);
+  GrindIndenterClass *indenter_class = GRIND_INDENTER_CLASS (klass);
   
-  G_OBJECT_CLASS (klass)->get_property = grind_backend_gnuindent_get_property;
-  
-  g_object_class_override_property (G_OBJECT_CLASS (klass),
-                                    PROP_AUTHOR, "author");
-  g_object_class_override_property (G_OBJECT_CLASS (klass),
-                                    PROP_VERSION, "version");
-  g_object_class_override_property (G_OBJECT_CLASS (klass),
-                                    PROP_NAME, "name");
-  g_object_class_override_property (G_OBJECT_CLASS (klass),
-                                    PROP_DESCRIPTION, "description");
-}
-
-static void
-grind_backend_gnuindent_indenter_iface_init (GrindIndenterInterface *iface)
-{
-  grind_backend_gnuindent_indenter_parent_iface = g_type_interface_peek_parent (iface);
-  
-  iface->indent           = grind_backend_gnuindent_real_indent;
-  /*iface->get_author       = grind_gnuindent_backend_real_get_author;
-  iface->get_version      = grind_gnuindent_backend_real_get_version;
-  iface->get_name         = grind_gnuindent_backend_real_get_name;
-  iface->get_description  = grind_gnuindent_backend_real_get_description;*/
+  indenter_class->get_author      = grind_backend_gnuindent_real_get_author;
+  indenter_class->get_description = grind_backend_gnuindent_real_get_description;
+  indenter_class->get_name        = grind_backend_gnuindent_real_get_name;
+  indenter_class->get_version     = grind_backend_gnuindent_real_get_version;
+  indenter_class->indent          = grind_backend_gnuindent_real_indent;
 }
 
 static void grind_backend_gnuindent_init (GrindBackendGNUIndent *self)
@@ -425,22 +365,16 @@ grind_backend_gnuindent_real_indent (GrindIndenter *base,
   return output != NULL;
 }
 
-GrindIndenter *
-grind_backend_gnuindent_new (void)
-{
-  return g_object_new (GRIND_TYPE_BACKEND_GNUINDENT, NULL);
-}
-
-/*static const gchar *
+static const gchar *
 grind_backend_gnuindent_real_get_author (GrindIndenter *base)
 {
   return "The GRInd authors";
 }
 
 static const gchar *
-grind_backend_gnuindent_real_get_version (GrindIndenter *base)
+grind_backend_gnuindent_real_get_description (GrindIndenter *base)
 {
-  return "0.1";
+  return "Indenter using GNUIndent";
 }
 
 static const gchar *
@@ -450,7 +384,14 @@ grind_backend_gnuindent_real_get_name (GrindIndenter *base)
 }
 
 static const gchar *
-grind_backend_gnuindent_real_get_description (GrindIndenter *base)
+grind_backend_gnuindent_real_get_version (GrindIndenter *base)
 {
-  return "Indenter using GNUIndent";
-}*/
+  return "0.1";
+}
+
+
+GrindIndenter *
+grind_backend_gnuindent_new (void)
+{
+  return g_object_new (GRIND_TYPE_BACKEND_GNUINDENT, NULL);
+}
