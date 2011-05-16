@@ -19,6 +19,10 @@ LT_INIT
 AC_PROG_CC
 AC_PROG_CC_C_O
 
+AC_PATH_PROG([GLIB_MKENUMS], [glib-mkenums], [NONE])
+AS_IF([test "x$GLIB_MKENUMS" = xNONE],
+      [AC_MSG_ERROR([cannot find glib-mkenums])])
+
 # Checks for libraries.
 PKG_CHECK_MODULES([GRIND], [geany >= 0.21
                             gtk+-2.0
