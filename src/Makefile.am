@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libgrind-plugin.la
 
 libgrind_plugin_la_SOURCES  = grind-plugin.c \
                               grind-indenter.c \
+                              grind-indenter-option.c \
                               grind-backend-manager.c \
                               backends/grind-astyle.c \
                               backends/grind-gnuindent.c \
