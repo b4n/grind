@@ -448,7 +448,8 @@ struct _GrindEnumIndenterOption
 {
   GrindIndenterOption parent;
   
-  gint  default_value;
+  GEnumClass *enum_class;
+  gint        default_value;
 };
 
 GType grind_enum_indenter_option_get_type (void) G_GNUC_CONST;
@@ -487,23 +488,22 @@ static gboolean
 grind_enum_indenter_option_value_validate (GParamSpec *pspec,
                                            GValue     *value)
 {
-  gboolean valid = FALSE;
+  GrindEnumIndenterOption  *internal = (GrindEnumIndenterOption *) pspec;
+  gboolean                  valid = FALSE;
   
   if (g_value_type_transformable (G_VALUE_TYPE (value), pspec->value_type)) {
-    gint        enum_value = g_value_get_enum (value);
-    GEnumClass *enum_class = g_type_class_ref (pspec->value_type);
+    gint enum_value = g_value_get_enum (value);
     
-    if (enum_value >= enum_class->minimum &&
-        enum_value <= enum_class->maximum) {
+    if (enum_value >= internal->enum_class->minimum &&
+        enum_value <= internal->enum_class->maximum) {
       guint i;
       
-      for (i = 0; i < enum_class->n_values && ! valid; i++) {
-        if (enum_class->values[i].value == enum_value) {
+      for (i = 0; i < internal->enum_class->n_values && ! valid; i++) {
+        if (internal->enum_class->values[i].value == enum_value) {
           valid = TRUE;
         }
       }
     }
-    g_type_class_unref (enum_class);
   }
   
   return valid;
@@ -538,6 +538,19 @@ grind_enum_indenter_option_get_value (GrindIndenterOption *option,
 }
 
 static void
+grind_enum_indenter_option_finalize (GParamSpec *pspec)
+{
+  GrindEnumIndenterOption *internal = (GrindEnumIndenterOption *) pspec;
+  
+  if (internal->enum_class) {
+    g_type_class_unref (internal->enum_class);
+    internal->enum_class = NULL;
+  }
+  
+  G_PARAM_SPEC_CLASS (grind_enum_indenter_option_parent_class)->finalize (pspec);
+}
+
+static void
 grind_enum_indenter_option_class_init (GrindEnumIndenterOptionClass *klass)
 {
   GParamSpecClass          *pspec_class   = G_PARAM_SPEC_CLASS (klass);
@@ -547,6 +560,7 @@ grind_enum_indenter_option_class_init (GrindEnumIndenterOptionClass *klass)
   pspec_class->value_set_default  = grind_enum_indenter_option_value_set_default;
   pspec_class->value_validate     = grind_enum_indenter_option_value_validate;
   pspec_class->values_cmp         = grind_enum_indenter_option_values_cmp;
+  pspec_class->finalize           = grind_enum_indenter_option_finalize;
   
   option_class->get_value         = grind_enum_indenter_option_get_value;
   option_class->set_value         = grind_enum_indenter_option_set_value;
@@ -581,6 +595,7 @@ grind_enum_indenter_option_new (const gchar *name,
   option->field_offset = offset;
   
   internal = (GrindEnumIndenterOption *) option;
+  internal->enum_class    = g_type_class_ref (pspec->value_type);
   internal->default_value = default_value;
   
   return (GParamSpec *) option;
