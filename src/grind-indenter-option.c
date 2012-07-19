@@ -160,7 +160,7 @@ grind_indenter_option_get_field_p (GrindIndenterOption *option,
 
 /* defines a integer-style option type, with minimum, maximum, default */
 #define DEFINE_SIMPLE_OPTION_TYPE(Tn, T_N, t_n, c_t)                           \
-                                                                               \
+/*                                                                               \
 typedef struct _Grind##Tn##IndenterOption Grind##Tn##IndenterOption;           \
 typedef GrindIndenterOptionClass          Grind##Tn##IndenterOptionClass;      \
                                                                                \
@@ -174,7 +174,7 @@ struct _Grind##Tn##IndenterOption                                              \
 };                                                                             \
                                                                                \
 GType grind_##t_n##_indenter_option_get_type (void) G_GNUC_CONST;              \
-                                                                               \
+*/                                                                               \
 G_DEFINE_TYPE (Grind##Tn##IndenterOption,                                      \
                grind_##t_n##_indenter_option,                                  \
                GRIND_TYPE_INDENTER_OPTION)                                     \
@@ -311,18 +311,6 @@ DEFINE_SIMPLE_OPTION_TYPE(Double, DOUBLE, double, gdouble)
 
 /* Boolean */
 
-typedef struct _GrindBooleanIndenterOption  GrindBooleanIndenterOption;
-typedef GrindIndenterOptionClass            GrindBooleanIndenterOptionClass;
-
-struct _GrindBooleanIndenterOption
-{
-  GrindIndenterOption parent;
-  
-  gboolean default_value;
-};
-
-GType grind_boolean_indenter_option_get_type (void) G_GNUC_CONST;
-
 G_DEFINE_TYPE (GrindBooleanIndenterOption,
                grind_boolean_indenter_option,
                GRIND_TYPE_INDENTER_OPTION)
@@ -420,23 +408,6 @@ grind_boolean_indenter_option_new (const gchar *name,
 
 
 /* Enum */
-
-#define GRIND_TYPE_ENUM_INDENTER_OPTION     (grind_enum_indenter_option_get_type ())
-#define GRIND_ENUM_INDENTER_OPTION(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRIND_TYPE_ENUM_INDENTER_OPTION, GrindEnumIndenterOption))
-#define GRIND_IS_ENUM_INDENTER_OPTION(obj)  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRIND_TYPE_ENUM_INDENTER_OPTION))
-
-typedef struct _GrindEnumIndenterOption GrindEnumIndenterOption;
-typedef GrindIndenterOptionClass        GrindEnumIndenterOptionClass;
-
-struct _GrindEnumIndenterOption
-{
-  GrindIndenterOption parent;
-  
-  GEnumClass *enum_class;
-  gint        default_value;
-};
-
-GType grind_enum_indenter_option_get_type (void) G_GNUC_CONST;
 
 G_DEFINE_TYPE (GrindEnumIndenterOption,
                grind_enum_indenter_option,
@@ -583,22 +554,6 @@ grind_enum_indenter_option_new (const gchar *name,
 
 
 /* String */
-
-#define GRIND_TYPE_STRING_INDENTER_OPTION    (grind_string_indenter_option_get_type ())
-#define GRIND_STRING_INDENTER_OPTION(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), GRIND_TYPE_STRING_INDENTER_OPTION, GrindStringIndenterOption))
-#define GRIND_IS_STRING_INDENTER_OPTION(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GRIND_TYPE_STRING_INDENTER_OPTION))
-
-typedef struct _GrindStringIndenterOption GrindStringIndenterOption;
-typedef GrindIndenterOptionClass          GrindStringIndenterOptionClass;
-
-struct _GrindStringIndenterOption
-{
-  GrindIndenterOption parent;
-  
-  gchar *default_value;
-};
-
-GType grind_string_indenter_option_get_type (void) G_GNUC_CONST;
 
 G_DEFINE_TYPE (GrindStringIndenterOption,
                grind_string_indenter_option,
