@@ -572,6 +572,8 @@ astyle (GrindBackendAStyle *self,
   gchar  *output = NULL;
   gchar  *filename;
   
+  /* we use a temp file rather than piping data to astyle because astyle
+   * hangs if the piped data isn't seekable */
   filename = write_tempfile (input, error);
   if (filename) {
     gchar **argv;
