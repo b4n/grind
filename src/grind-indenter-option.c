@@ -51,6 +51,11 @@ grind_indenter_option_class_init (GrindIndenterOptionClass *klass)
 static void
 grind_indenter_option_init (GrindIndenterOption *self)
 {
+  GParamSpec *pspec = G_PARAM_SPEC (self);
+  
+  pspec->value_type = G_TYPE_INVALID;
+  pspec->owner_type = G_TYPE_INVALID;
+  
   self->field_offset = 0;
 }
 
@@ -283,7 +288,6 @@ grind_##t_n##_indenter_option_new (const gchar *name,                          \
                                  name, nick, blurb, flags);                    \
                                                                                \
   pspec->value_type = G_TYPE_##T_N;                                            \
-  pspec->owner_type = G_TYPE_INVALID;                                          \
                                                                                \
   option = (GrindIndenterOption *) pspec;                                      \
   option->field_offset = offset;                                               \
@@ -580,7 +584,6 @@ grind_enum_indenter_option_new (const gchar *name,
                                  name, nick, blurb, flags);
   
   pspec->value_type = enum_type;
-  pspec->owner_type = G_TYPE_INVALID;
   
   option = (GrindIndenterOption *) pspec;
   option->field_offset = offset;
@@ -706,7 +709,6 @@ grind_string_indenter_option_new (const gchar *name,
                                  name, nick, blurb, flags);
   
   pspec->value_type = G_TYPE_STRING;
-  pspec->owner_type = G_TYPE_INVALID;
   
   option = (GrindIndenterOption *) pspec;
   option->field_offset = offset;
