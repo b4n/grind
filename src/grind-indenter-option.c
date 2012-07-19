@@ -198,11 +198,11 @@ grind_##t_n##_indenter_option_values_cmp (GParamSpec   *pspec,                 \
                                                                                \
   if (a < b) {                                                                 \
     return -1;                                                                 \
-  }                                                                            \
-  if (a > b) {                                                                 \
+  } else if (a > b) {                                                          \
     return 1;                                                                  \
+  } else {                                                                     \
+    return 0;                                                                  \
   }                                                                            \
-  return 0;                                                                    \
 }                                                                              \
                                                                                \
 static gboolean                                                                \
@@ -344,7 +344,7 @@ grind_boolean_indenter_option_values_cmp (GParamSpec   *pspec,
   gboolean a = g_value_get_boolean (value_a);
   gboolean b = g_value_get_boolean (value_b);
   
-  return (a == b) ? 0 : -1;
+  return a - b;
 }
 
 static void
