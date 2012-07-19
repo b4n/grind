@@ -210,15 +210,14 @@ grind_##t_n##_indenter_option_value_validate (GParamSpec *pspec,               \
                                               GValue     *value)               \
 {                                                                              \
   Grind##Tn##IndenterOption  *internal = (Grind##Tn##IndenterOption *) pspec;  \
-  c_t                         val;                                             \
+  c_t                         val = g_value_get_##t_n (value);                 \
                                                                                \
-  if (! g_value_type_transformable (G_VALUE_TYPE (value), pspec->value_type)) {\
+  if (val < internal->min_value || val > internal->max_value) {                \
+    g_value_set_##t_n (value, internal->default_value);                        \
+    return TRUE;                                                               \
+  } else {                                                                     \
     return FALSE;                                                              \
   }                                                                            \
-                                                                               \
-  val = g_value_get_##t_n (value);                                             \
-                                                                               \
-  return (val >= internal->min_value && val <= internal->max_value);           \
 }                                                                              \
                                                                                \
 static void                                                                    \
@@ -229,9 +228,6 @@ grind_##t_n##_indenter_option_set_value (GrindIndenterOption *option,          \
   gpointer  field_p = grind_indenter_option_get_field_p (option, gobject);     \
   c_t       val     = g_value_get_##t_n (value);                               \
   c_t      *val_p   = (c_t *) field_p;                                         \
-                                                                               \
-  g_return_if_fail (grind_##t_n##_indenter_option_value_validate ((GParamSpec *) option,\
-                                                                  (GValue *) value));\
                                                                                \
   if (val != *val_p) {                                                         \
     *val_p = val;                                                              \
@@ -351,13 +347,6 @@ grind_boolean_indenter_option_values_cmp (GParamSpec   *pspec,
   return (a == b) ? 0 : -1;
 }
 
-static gboolean
-grind_boolean_indenter_option_value_validate (GParamSpec *pspec,
-                                              GValue     *value)
-{
-  return g_value_type_transformable (G_VALUE_TYPE (value), pspec->value_type);
-}
-
 static void
 grind_boolean_indenter_option_set_value (GrindIndenterOption *option,
                                          gpointer             gobject,
@@ -366,9 +355,6 @@ grind_boolean_indenter_option_set_value (GrindIndenterOption *option,
   gpointer  field_p = grind_indenter_option_get_field_p (option, gobject);
   gboolean  val     = g_value_get_boolean (value);
   gboolean *val_p   = (gboolean *) field_p;
-  
-  g_return_if_fail (grind_boolean_indenter_option_value_validate ((GParamSpec *) option,
-                                                                  (GValue *) value));
   
   if (val != *val_p) {
     *val_p = val;
@@ -394,7 +380,6 @@ grind_boolean_indenter_option_class_init (GrindBooleanIndenterOptionClass *klass
   
   pspec_class->value_type         = G_TYPE_ENUM;
   pspec_class->value_set_default  = grind_boolean_indenter_option_value_set_default;
-  pspec_class->value_validate     = grind_boolean_indenter_option_value_validate;
   pspec_class->values_cmp         = grind_boolean_indenter_option_values_cmp;
   
   option_class->get_value         = grind_boolean_indenter_option_get_value;
@@ -485,23 +470,23 @@ grind_enum_indenter_option_value_validate (GParamSpec *pspec,
 {
   GrindEnumIndenterOption  *internal = (GrindEnumIndenterOption *) pspec;
   gboolean                  valid = FALSE;
+  gint                      enum_value = g_value_get_enum (value);
   
-  if (g_value_type_transformable (G_VALUE_TYPE (value), pspec->value_type)) {
-    gint enum_value = g_value_get_enum (value);
+  if (enum_value >= internal->enum_class->minimum &&
+      enum_value <= internal->enum_class->maximum) {
+    guint i;
     
-    if (enum_value >= internal->enum_class->minimum &&
-        enum_value <= internal->enum_class->maximum) {
-      guint i;
-      
-      for (i = 0; i < internal->enum_class->n_values && ! valid; i++) {
-        if (internal->enum_class->values[i].value == enum_value) {
-          valid = TRUE;
-        }
+    for (i = 0; i < internal->enum_class->n_values && ! valid; i++) {
+      if (internal->enum_class->values[i].value == enum_value) {
+        valid = TRUE;
       }
     }
   }
+  if (! valid) {
+    g_value_set_enum (value, internal->default_value);
+  }
   
-  return valid;
+  return ! valid;
 }
 
 static void
@@ -512,9 +497,6 @@ grind_enum_indenter_option_set_value (GrindIndenterOption *option,
   gpointer  field_p     = grind_indenter_option_get_field_p (option, gobject);
   gint      enum_value  = g_value_get_enum (value);
   gint     *enum_p      = (gint *) field_p;
-  
-  g_return_if_fail (grind_enum_indenter_option_value_validate ((GParamSpec *) option,
-                                                               (GValue *) value));
   
   if (enum_value != *enum_p) {
     *enum_p = enum_value;
