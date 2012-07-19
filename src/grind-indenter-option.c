@@ -378,7 +378,7 @@ grind_boolean_indenter_option_class_init (GrindBooleanIndenterOptionClass *klass
   GParamSpecClass          *pspec_class   = G_PARAM_SPEC_CLASS (klass);
   GrindIndenterOptionClass *option_class  = GRIND_INDENTER_OPTION_CLASS (klass);
   
-  pspec_class->value_type         = G_TYPE_ENUM;
+  pspec_class->value_type         = G_TYPE_BOOLEAN;
   pspec_class->value_set_default  = grind_boolean_indenter_option_value_set_default;
   pspec_class->values_cmp         = grind_boolean_indenter_option_values_cmp;
   
@@ -400,12 +400,16 @@ grind_boolean_indenter_option_new (const gchar *name,
                                    GParamFlags  flags,
                                    gsize        offset)
 {
+  GParamSpec                 *pspec;
   GrindIndenterOption        *option;
   GrindBooleanIndenterOption *internal;
   
-  option = g_param_spec_internal (grind_boolean_indenter_option_get_type (),
-                                  name, nick, blurb, flags);
+  pspec = g_param_spec_internal (grind_boolean_indenter_option_get_type (),
+                                 name, nick, blurb, flags);
   
+  pspec->value_type = G_TYPE_BOOLEAN;
+  
+  option = (GrindIndenterOption *) pspec;
   option->field_offset = offset;
   
   internal = (GrindBooleanIndenterOption *) option;
