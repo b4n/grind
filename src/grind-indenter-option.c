@@ -40,21 +40,12 @@ G_DEFINE_TYPE (GrindIndenterOption,
                grind_indenter_option,
                G_TYPE_PARAM)
 
-/* default value_validate(), should be overriden by subclasses */
-static gboolean
-grind_indenter_option_value_validate (GParamSpec *pspec,
-                                      GValue     *value)
-{
-  return g_value_type_transformable (G_VALUE_TYPE (value), pspec->value_type);
-}
-
 static void
 grind_indenter_option_class_init (GrindIndenterOptionClass *klass)
 {
   GParamSpecClass *pspec_class = G_PARAM_SPEC_CLASS (klass);
   
-  pspec_class->value_type     = G_TYPE_INVALID;
-  pspec_class->value_validate = grind_indenter_option_value_validate;
+  pspec_class->value_type = G_TYPE_INVALID;
 }
 
 static void
