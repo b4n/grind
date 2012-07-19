@@ -288,6 +288,36 @@ static void grind_backend_astyle_init (GrindBackendAStyle *self)
 
 
 static void
+apply_indent_settings (GrindBackendAStyle  *self,
+                       GeanyDocument       *doc)
+{
+  GeanyIndentType         type;
+  gint                    width   = self->priv->indent_width;
+  const GeanyIndentPrefs *iprefs  = editor_get_indent_prefs (doc->editor);
+  
+  if (width == 0) {
+    width = iprefs->width;
+  }
+  switch (self->priv->indent_type) {
+    case GRIND_BACKEND_ASTYLE_INDENT_TYPE_DOCUMENT_SETTING:
+      type = iprefs->type;
+      break;
+    
+    case GRIND_BACKEND_ASTYLE_INDENT_TYPE_FORCE_TABS:
+    case GRIND_BACKEND_ASTYLE_INDENT_TYPE_TABS:
+      type = GEANY_INDENT_TYPE_TABS;
+      break;
+    
+    default:
+      type = GEANY_INDENT_TYPE_SPACES;
+  }
+  
+  if (type != iprefs->type || width != iprefs->width) {
+    editor_set_indent (doc->editor, type, width);
+  }
+}
+
+static void
 build_args_add_indent_type (GrindBackendAStyle *self,
                             GeanyDocument      *doc,
                             GPtrArray          *array)
@@ -575,17 +605,18 @@ grind_backend_astyle_real_indent (GrindIndenter  *base,
                                   gint            start,
                                   gint            end)
 {
-  ScintillaObject  *sci = doc->editor->sci;
-  gchar            *input;
-  gchar            *output;
-  GError           *err = NULL;
+  GrindBackendAStyle *self = GRIND_BACKEND_ASTYLE (base);
+  ScintillaObject    *sci = doc->editor->sci;
+  gchar              *input;
+  gchar              *output;
+  GError             *err = NULL;
   
   if (! is_language_supported (doc->file_type)) {
     return FALSE;
   }
   
   input = sci_get_contents_range (sci, start, end);
-  output = astyle (GRIND_BACKEND_ASTYLE (base), doc, input, &err);
+  output = astyle (self, doc, input, &err);
   g_free (input);
   if (! output) {
     g_critical ("AStyle failed: %s", err->message);
@@ -594,6 +625,8 @@ grind_backend_astyle_real_indent (GrindIndenter  *base,
     sci_set_target_start (sci, start);
     sci_set_target_end (sci, end);
     sci_replace_target (sci, output, FALSE);
+    
+    apply_indent_settings (self, doc);
   }
   g_free (output);
   
