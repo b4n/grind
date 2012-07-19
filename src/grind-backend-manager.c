@@ -43,9 +43,10 @@ typedef struct _BackendInfo BackendInfo;
 
 struct _BackendInfo
 {
-  GType   g_type;
-  gchar  *name;
-  gint    priority;
+  GType           g_type;
+  gchar          *name;
+  gint            priority;
+  GrindIndenter  *instance;
 };
 
 
@@ -63,6 +64,7 @@ backend_info_new (GType         g_type,
   info->g_type = g_type;
   info->name = g_strdup (name);
   info->priority = priority;
+  info->instance = g_object_new (info->g_type, NULL);
   
   return info;
 }
@@ -70,6 +72,7 @@ backend_info_new (GType         g_type,
 static void
 backend_info_free (BackendInfo *info)
 {
+  g_object_unref (info->instance);
   g_free (info->name);
   g_slice_free1 (sizeof *info, info);
 }
@@ -219,7 +222,7 @@ grind_backend_manager_get_backend (GrindBackendManager *self,
       info = self->priv->backends->data;
     }
     
-    indenter = g_object_new (info->g_type, NULL);
+    indenter = g_object_ref (info->instance);
   }
   
   return indenter;
