@@ -292,26 +292,38 @@ build_args_add_indent_type (GrindBackendAStyle *self,
                             GeanyDocument      *doc,
                             GPtrArray          *array)
 {
-  const GeanyIndentPrefs *iprefs;
+  const GeanyIndentPrefs       *iprefs  = editor_get_indent_prefs (doc->editor);
+  gint                          width   = self->priv->indent_width;
+  GrindBackendAStyleIndentType  type    = self->priv->indent_type;
+  gchar                         arg;
   
-  iprefs = editor_get_indent_prefs (doc->editor);
-  switch (iprefs->type) {
-    case GEANY_INDENT_TYPE_SPACES:
-      g_ptr_array_add (array, g_strdup_printf ("-s%d", iprefs->width));
-      break;
-    
-    case GEANY_INDENT_TYPE_BOTH:
-      /* AStyle don't seem to know tab&space indentation mode, so only use
-       * spaces. Maybe warn the user? */
-      /*g_ptr_array_add (array, g_strdup_printf ("-t%d", iprefs->width));*/
-      g_ptr_array_add (array, g_strdup_printf ("-s%d", iprefs->width));
-      break;
-    
-    case GEANY_INDENT_TYPE_TABS:
-      /* is -T really wanted? maybe -t is better, not sure. */
-      g_ptr_array_add (array, g_strdup_printf ("-T%d", iprefs->width));
-      break;
+  if (width == 0) {
+    width = iprefs->width;
   }
+  if (type == GRIND_BACKEND_ASTYLE_INDENT_TYPE_DOCUMENT_SETTING) {
+    switch (iprefs->type) {
+      case GEANY_INDENT_TYPE_BOTH:
+        /* AStyle don't seem to know tab&space indentation mode, so only use
+         * spaces. Maybe warn the user? */
+      case GEANY_INDENT_TYPE_SPACES:
+        type = GRIND_BACKEND_ASTYLE_INDENT_TYPE_SPACES;
+        break;
+      
+      case GEANY_INDENT_TYPE_TABS:
+        /* is "force-tabs" really wanted? maybe "tabs" is better, not sure. */
+        type = GRIND_BACKEND_ASTYLE_INDENT_TYPE_FORCE_TABS;
+        break;
+    }
+  }
+  
+  switch (type) {
+    default:
+    case GRIND_BACKEND_ASTYLE_INDENT_TYPE_SPACES:     arg = 's';  break;
+    case GRIND_BACKEND_ASTYLE_INDENT_TYPE_TABS:       arg = 't';  break;
+    case GRIND_BACKEND_ASTYLE_INDENT_TYPE_FORCE_TABS: arg = 'T';  break;
+  }
+  
+  g_ptr_array_add (array, g_strdup_printf ("-%c%d", arg, width));
 }
 
 #ifndef sci_get_eol_mode
