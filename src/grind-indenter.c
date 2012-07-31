@@ -147,6 +147,17 @@ grind_indenter_get_property (GObject    *object,
 }
 
 
+/**
+ * grind_indenter_indent:
+ * @self: A #GrindIndenter
+ * @doc: The #GeanyDocument to re-indent
+ * @start: The start of the range to re-indent
+ * @end: The end of the range to re-indent
+ * 
+ * Re-indents a #GeanyDocument range.
+ * 
+ * Returns: %TRUE on success, %FALSE otherwise.
+ */
 gboolean
 grind_indenter_indent (GrindIndenter *self,
                        GeanyDocument *doc,
@@ -156,24 +167,56 @@ grind_indenter_indent (GrindIndenter *self,
   return GRIND_INDENTER_GET_CLASS (self)->indent (self, doc, start, end);
 }
 
+/**
+ * grind_indenter_get_author:
+ * @self: A #GrindIndenter
+ * 
+ * Gets the author(s) name(s) of a #GrindIndenter
+ * 
+ * Returns: (transfer none): The indenter's author string
+ */
 const gchar *
 grind_indenter_get_author (GrindIndenter *self)
 {
   return GRIND_INDENTER_GET_CLASS (self)->get_author (self);
 }
 
+/**
+ * grind_indenter_get_description:
+ * @self: A #GrindIndenter
+ * 
+ * Gets a human-readable description of a #GrindIndenter.
+ * 
+ * Returns: (transfer none): The indenter's description
+ */
 const gchar *
 grind_indenter_get_description (GrindIndenter *self)
 {
   return GRIND_INDENTER_GET_CLASS (self)->get_description (self);
 }
 
+/**
+ * grind_indenter_get_name:
+ * @self: A #GrindIndenter
+ * 
+ * Returns the name of a #GrindIndenter
+ * 
+ * Returns: (transfer none): The indenter's name
+ */
 const gchar *
 grind_indenter_get_name (GrindIndenter *self)
 {
   return GRIND_INDENTER_GET_CLASS (self)->get_name (self);
 }
 
+/**
+ * grind_indenter_get_version:
+ * @self: A #GrindIndenter object
+ * 
+ * Gets the version string of a #GrindIndenter.
+ * 
+ * Returns: (transfer none): The indenter's version string
+ */
 const gchar *
 grind_indenter_get_version (GrindIndenter *self)
 {
@@ -370,6 +413,17 @@ grind_indenter_sync_option_to_keyfile (GrindIndenterOption *option,
   return success;
 }
 
+/**
+ * grind_indenter_sync_options_from_keyfile:
+ * @self: A #GrindIndenter
+ * @key_file: A #GKeyFile
+ * @error: Return location for errors or %NULL
+ * 
+ * Loads options of a #GrindIndenter from a #GKeyFile.  The options can be
+ * saved to a key file using grind_indenter_sync_options_to_keyfile().
+ * 
+ * Returns: %TRUE on success and %FALSE if an error occurred.
+ */
 gboolean
 grind_indenter_sync_options_from_keyfile (GrindIndenter *self,
                                           GKeyFile      *key_file,
@@ -393,6 +447,17 @@ grind_indenter_sync_options_from_keyfile (GrindIndenter *self,
   return success;
 }
 
+/**
+ * grind_indenter_sync_options_to_keyfile:
+ * @self: A #GrindIndenter object
+ * @key_file: A #GKeyFile
+ * @error: Return location for errors, or %NULL
+ * 
+ * Saves current options of a #GrindIndenter to a #GKeyFile.  These options
+ * can be applied back using grind_indenter_sync_options_from_keyfile().
+ * 
+ * Returns: %TRUE on success, or %FALSE if an error occurred.
+ */
 gboolean
 grind_indenter_sync_options_to_keyfile (GrindIndenter *self,
                                         GKeyFile      *key_file,
