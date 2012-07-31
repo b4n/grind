@@ -61,6 +61,8 @@ void                  grind_backend_manager_register_backend  (GrindBackendManag
                                                                gint                 priority);
 GrindIndenter        *grind_backend_manager_get_backend       (GrindBackendManager *manager,
                                                                const gchar         *name);
+GrindIndenter       **grind_backend_manager_list_backends     (GrindBackendManager *self,
+                                                               guint               *n_backends);
                              
 
 

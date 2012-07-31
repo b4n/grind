@@ -227,3 +227,30 @@ grind_backend_manager_get_backend (GrindBackendManager *self,
   
   return indenter;
 }
+
+/**
+ * grind_backend_manager_list_backends:
+ * @self: A #GrindBackendManager
+ * @n_backends: Return location for the number of backends, or %NULL
+ * 
+ * Gets an array of all known backends.
+ * 
+ * Returns: (transfer container) (array-length n_backends): An array of backends
+ */
+GrindIndenter **
+grind_backend_manager_list_backends (GrindBackendManager *self,
+                                     guint               *n_backends)
+{
+  GPtrArray  *array = g_ptr_array_new ();
+  GList      *item;
+  
+  for (item = self->priv->backends; item; item = item->next) {
+    g_ptr_array_add (array, ((BackendInfo*) item->data)->instance);
+  }
+  
+  if (n_backends) {
+    *n_backends = array->len;
+  }
+  
+  return (GrindIndenter **) g_ptr_array_free (array, FALSE);
+}
