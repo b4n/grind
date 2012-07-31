@@ -30,7 +30,9 @@ EXTRA_DIST = $(srcdir)/grind-enum-types.c.template \
 
 
 libgrind_plugin_la_SOURCES  = $(generated_sources) \
-                              $(sources)
+                              $(sources) \
+                              $(generated_headers) \
+                              $(headers)
 libgrind_plugin_la_CFLAGS   = $(GRIND_CFLAGS) \
                               -DG_LOG_DOMAIN="\"GRInd\""
 libgrind_plugin_la_LIBADD   = $(GRIND_LIBS)
