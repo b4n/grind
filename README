@@ -1,0 +1,2 @@
+GRInd (standing for Geany Re-Indent), is a Geany plugin for reformatting source
+code.  It can use various backends, including GNU `indent` tool and AStyle.
